@@ -1,0 +1,6 @@
+{
+  "name": "UpPath CRM CDP Campaign Mockups",
+  "description": "Interactive campaign mockups and illustrations for UpPath CRM/CDP use cases, featuring customizable mobile, WhatsApp, and email preview simulators.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
