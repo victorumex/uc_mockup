@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ActiveTab, SimulatorState } from './types';
 import { SidebarSimulator } from './components/SidebarSimulator';
 import { UseCaseSelector } from './components/UseCaseSelector';
@@ -17,7 +17,8 @@ export default function App() {
     sessionsLeft: 1,
     mentorRating: 4.8,
     daysInactive: 2,
-    campaignTriggered: 'UC-01'
+    campaignTriggered: 'UC-01',
+    userSegment: 'free_explorer'
   });
 
   // Keep track of which tab the user manually clicks. If they don't click,
@@ -27,9 +28,17 @@ export default function App() {
   // Auto-evaluation hook: updates activeTab as simulator sliders change, 
   // so the user sees immediate mockup reaction, but allows manual override clicks too!
   const getAutoTriggerTab = (): ActiveTab => {
-    if (simulatorState.daysInactive >= 10) return 'UC-02';
-    if (simulatorState.sessionsDone >= 3 && simulatorState.mentorRating >= 4.5) return 'UC-04';
-    if (simulatorState.modulesCompleted >= 2) return 'UC-01';
+    if (simulatorState.userSegment === 'anonymous') return 'UC-05';
+    if (simulatorState.userSegment === 'lead') return 'UC-06';
+    if (simulatorState.userSegment === 'free_explorer') {
+      if (simulatorState.modulesCompleted >= 2) return 'UC-01';
+      return 'UC-03';
+    }
+    if (simulatorState.userSegment === 'premium') {
+      if (simulatorState.daysInactive >= 10) return 'UC-02';
+      if (simulatorState.sessionsDone >= 3 && simulatorState.mentorRating >= 4.5) return 'UC-04';
+      return 'UC-04';
+    }
     return 'UC-03';
   };
 
@@ -40,6 +49,47 @@ export default function App() {
     setActiveTab(autoTab);
     setSimulatorState(prev => ({ ...prev, campaignTriggered: autoTab }));
   }, [autoTab]);
+
+  // Scalable layout implementation to keep exact coordinates and shrink content
+  const [scale, setScale] = useState(1);
+  const [height, setHeight] = useState<number | 'auto'>('auto');
+  const containerRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (containerRef.current && contentRef.current) {
+        const parentWidth = containerRef.current.getBoundingClientRect().width;
+        const baseWidth = 1280; // Designing for standard 1280px resolution
+        
+        const scaleFactor = parentWidth < baseWidth ? parentWidth / baseWidth : 1;
+        setScale(scaleFactor);
+        
+        // Adjust container height to match scaled down contents
+        setHeight(contentRef.current.scrollHeight * scaleFactor);
+      }
+    };
+
+    const resizeObserver = new ResizeObserver(() => {
+      handleResize();
+    });
+
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current);
+    }
+    if (contentRef.current) {
+      resizeObserver.observe(contentRef.current);
+    }
+
+    window.addEventListener('resize', handleResize);
+    // Initial evaluation
+    setTimeout(handleResize, 50);
+
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#081931] text-[#f8f7ff] font-sans selection:bg-[#7b2cbf]/30 selection:text-[#f8f7ff] relative overflow-x-hidden">
@@ -71,78 +121,101 @@ export default function App() {
           </div>
         </header>
 
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-8 flex-1">
+        <main className="max-w-7xl mx-auto w-full px-4 py-8 flex flex-col gap-8 flex-1 relative">
+          
+          {/* SCALABLE VIEWPORT GRID CONTAINER */}
+          <div 
+            ref={containerRef} 
+            className="w-full relative"
+            style={{ 
+              height: height === 'auto' ? 'auto' : `${height}px`, 
+              overflow: 'hidden' 
+            }}
+          >
+            <div 
+              ref={contentRef}
+              className={`absolute top-0 origin-top-left ${scale < 1 ? 'left-0' : 'left-1/2 -translate-x-1/2'}`}
+              style={{ 
+                width: '1280px', 
+                transform: `scale(${scale})`,
+              }}
+            >
+              {/* MAIN INTERACTIVE SIMULATOR (THE CHOSEN FOCUS!) */}
+              <section id="section-core" className="flex flex-col gap-8">
+                <div className="flex justify-between items-center bg-white/[0.03] border border-white/10 px-6 py-4 rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] backdrop-blur-md">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-[#7b2cbf]/80 text-[#f8f7ff] flex items-center justify-center font-bold font-mono text-sm leading-none border border-white/10">
+                      ★
+                    </div>
+                    <div>
+                      <h2 className="text-sm md:text-base font-bold text-white tracking-tight flex items-center gap-2">
+                        Use Case Campaign & Mockup Simulator <Sparkles size={16} className="text-[#f8f7ff] animate-pulse" />
+                      </h2>
+                      <p className="text-xs text-slate-400">Gunakan simulator sebelah kiri untuk memicu atau edit variabel desain mockup!</p>
+                    </div>
+                  </div>
+                </div>
 
-          {/* MAIN INTERACTIVE SIMULATOR (THE CHOSEN FOCUS!) */}
-          <section id="section-core" className="flex flex-col gap-4">
-            <div className="flex justify-between items-center bg-white/[0.03] border border-white/10 px-6 py-4 rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] backdrop-blur-md">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-[#7b2cbf]/80 text-[#f8f7ff] flex items-center justify-center font-bold font-mono text-sm leading-none border border-white/10">
-                  ★
+                <div className="grid grid-cols-12 gap-6 items-stretch">
+                  
+                  {/* LEFT SIDEPANEL: THE CDP USER SIMULATOR */}
+                  <div className="col-span-4 h-full">
+                    <SidebarSimulator 
+                      state={simulatorState} 
+                      onChange={(updates) => {
+                        setSimulatorState(prev => {
+                          const next = { ...prev, ...updates };
+                          // If slides are custom tweaked, auto-set state.sessionsLeft 
+                          if (updates.sessionsDone !== undefined) {
+                            next.sessionsLeft = Math.max(0, 4 - next.sessionsDone);
+                          }
+                          return next;
+                        });
+                      }} 
+                    />
+                  </div>
+
+                  {/* RIGHT SIDE: INTERACTIVE MOCKUPS AND SELECTOR */}
+                  <div className="col-span-8 flex flex-col gap-4 h-full">
+                    
+                    {/* Tabs for Use Cases */}
+                    <UseCaseSelector 
+                      activeTab={activeTab} 
+                      onSelect={(tab) => {
+                        setActiveTab(tab);
+                        // Optionally sync back variables or triggers to make user feel the flow
+                        if (tab === 'UC-01') {
+                          setSimulatorState(prev => ({ ...prev, userSegment: 'free_explorer', daysInactive: 2, modulesCompleted: Math.max(2, prev.modulesCompleted) }));
+                        } else if (tab === 'UC-02') {
+                          setSimulatorState(prev => ({ ...prev, userSegment: 'premium', daysInactive: Math.max(10, prev.daysInactive) }));
+                        } else if (tab === 'UC-03') {
+                          setSimulatorState(prev => ({ ...prev, userSegment: 'free_explorer', daysInactive: 2, modulesCompleted: 0, sessionsDone: 0 }));
+                        } else if (tab === 'UC-04') {
+                          setSimulatorState(prev => ({ ...prev, userSegment: 'premium', daysInactive: 1, sessionsDone: Math.max(3, prev.sessionsDone), mentorRating: Math.max(4.5, prev.mentorRating) }));
+                        } else if (tab === 'UC-05') {
+                          setSimulatorState(prev => ({ ...prev, userSegment: 'anonymous', daysInactive: 2 }));
+                        } else if (tab === 'UC-06') {
+                          setSimulatorState(prev => ({ ...prev, userSegment: 'lead', daysInactive: 2 }));
+                        }
+                      }} 
+                      autoTriggeredTab={autoTab}
+                    />
+
+                    {/* Live Mockup Renderer */}
+                    <div className="flex-1">
+                      <Mockups state={simulatorState} activeTab={activeTab} />
+                    </div>
+
+                  </div>
+
                 </div>
-                <div>
-                  <h2 className="text-sm md:text-base font-bold text-white tracking-tight flex items-center gap-2">
-                    Use Case Campaign & Mockup Simulator <Sparkles size={16} className="text-[#f8f7ff] animate-pulse" />
-                  </h2>
-                  <p className="text-xs text-slate-400">Gunakan simulator sebelah kiri untuk memicu atau edit variabel desain mockup!</p>
-                </div>
-              </div>
+
+                {/* LIVE FUNNELS & CAMPAIGN CONVERSION STATISTICS */}
+                <AnalyticsPanel activeTab={activeTab} state={simulatorState} />
+
+              </section>
             </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-              
-              {/* LEFT SIDEPANEL: THE CDP USER SIMULATOR */}
-              <div className="lg:col-span-4 h-full">
-                <SidebarSimulator 
-                  state={simulatorState} 
-                  onChange={(updates) => {
-                    setSimulatorState(prev => {
-                      const next = { ...prev, ...updates };
-                      // If slides are custom tweaked, auto-set state.sessionsLeft 
-                      if (updates.sessionsDone !== undefined) {
-                        next.sessionsLeft = Math.max(0, 4 - next.sessionsDone);
-                      }
-                      return next;
-                    });
-                  }} 
-                />
-              </div>
-
-              {/* RIGHT SIDE: INTERACTIVE MOCKUPS AND SELECTOR */}
-              <div className="lg:col-span-8 flex flex-col gap-4 h-full">
-                
-                {/* Tabs for Use Cases */}
-                <UseCaseSelector 
-                  activeTab={activeTab} 
-                  onSelect={(tab) => {
-                    setActiveTab(tab);
-                    // Optionally sync back daysInactive or triggers to make user feel the flow
-                    if (tab === 'UC-01') {
-                      setSimulatorState(prev => ({ ...prev, daysInactive: 2, modulesCompleted: Math.max(2, prev.modulesCompleted) }));
-                    } else if (tab === 'UC-02') {
-                      setSimulatorState(prev => ({ ...prev, daysInactive: Math.max(10, prev.daysInactive) }));
-                    } else if (tab === 'UC-03') {
-                      setSimulatorState(prev => ({ ...prev, daysInactive: 2, modulesCompleted: 0, sessionsDone: 0 }));
-                    } else if (tab === 'UC-04') {
-                      setSimulatorState(prev => ({ ...prev, daysInactive: 1, sessionsDone: Math.max(3, prev.sessionsDone), mentorRating: Math.max(4.5, prev.mentorRating) }));
-                    }
-                  }} 
-                  autoTriggeredTab={autoTab}
-                />
-
-                {/* Live Mockup Renderer */}
-                <div className="flex-1">
-                  <Mockups state={simulatorState} activeTab={activeTab} />
-                </div>
-
-              </div>
-
-            </div>
-
-            {/* LIVE FUNNELS & CAMPAIGN CONVERSION STATISTICS */}
-            <AnalyticsPanel activeTab={activeTab} state={simulatorState} />
-
-          </section>
+          </div>
 
         </main>
 

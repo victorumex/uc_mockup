@@ -7,12 +7,12 @@ import {
 
 interface MockupsProps {
   state: SimulatorState;
-  activeTab: 'UC-01' | 'UC-02' | 'UC-03' | 'UC-04';
+  activeTab: 'UC-01' | 'UC-02' | 'UC-03' | 'UC-04' | 'UC-05' | 'UC-06';
 }
 
 export function Mockups({ state, activeTab }: MockupsProps) {
-  // Toggle style for UC-01 and UC-04
-  const [subType, setSubType] = useState<'popup' | 'email'>('popup');
+  // Toggle style for multiple formats
+  const [subType, setSubType] = useState<string>('popup');
   
   // Drip sequence day indicator for UC-03
   const [selectedDripDay, setSelectedDripDay] = useState<1 | 2 | 3 | 5 | 7>(1);
@@ -23,6 +23,10 @@ export function Mockups({ state, activeTab }: MockupsProps) {
       setSubType('popup');
     } else if (activeTab === 'UC-04') {
       setSubType('banner');
+    } else if (activeTab === 'UC-05') {
+      setSubType('popup');
+    } else if (activeTab === 'UC-06') {
+      setSubType('email');
     }
   }, [activeTab]);
 
@@ -132,6 +136,48 @@ export function Mockups({ state, activeTab }: MockupsProps) {
             </button>
           </div>
         )}
+
+        {activeTab === 'UC-05' && (
+          <div className="bg-white/5 p-1 rounded-lg border border-white/10 backdrop-blur-sm flex gap-1">
+            <button
+              onClick={() => setSubType('popup')}
+              className={`px-3 py-1.5 rounded-md text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                subType === 'popup' ? 'bg-indigo-600/30 text-indigo-200 border border-indigo-500/30 shadow-md' : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <Smartphone size={13} /> Web Popup Lead Magnet
+            </button>
+            <button
+              onClick={() => setSubType('ad')}
+              className={`px-3 py-1.5 rounded-md text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                subType === 'ad' ? 'bg-indigo-600/30 text-indigo-200 border border-indigo-500/30 shadow-md' : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <Eye size={13} /> Google Retargeting Ad
+            </button>
+          </div>
+        )}
+
+        {activeTab === 'UC-06' && (
+          <div className="bg-white/5 p-1 rounded-lg border border-white/10 backdrop-blur-sm flex gap-1">
+            <button
+              onClick={() => setSubType('email')}
+              className={`px-3 py-1.5 rounded-md text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                subType === 'email' ? 'bg-amber-600/30 text-amber-200 border border-amber-500/30 shadow-md' : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <Mail size={13} /> Nurture Email Day 1
+            </button>
+            <button
+              onClick={() => setSubType('whatsapp')}
+              className={`px-3 py-1.5 rounded-md text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                subType === 'whatsapp' ? 'bg-amber-600/30 text-amber-200 border border-amber-500/30 shadow-md' : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <MessageSquare size={13} /> WhatsApp Follow-Up
+            </button>
+          </div>
+        )}
       </div>
 
       {/* RENDER ACTIVE USE CASE MOCKUP */}
@@ -231,7 +277,7 @@ export function Mockups({ state, activeTab }: MockupsProps) {
               {/* Mail client Header mockup */}
               <div className="bg-white/[0.04] border-b border-white/10 p-4 flex flex-col gap-2">
                 <div className="flex justify-between items-center text-xs text-slate-500">
-                  <span className="flex items-center gap-2"><Mail size={13} className="text-[#7b2cbf]" /> EMAIL CAMPAIGN UC-01</span>
+                  <span className="flex items-center gap-2"><Mail size={13} className="text-[#7b2cbf]" /> EMAIL CAMPAIGN TAHAP 4</span>
                   <span className="bg-[#7b2cbf]/10 text-[#7b2cbf] border border-[#7b2cbf]/20 px-2 py-0.5 rounded text-[10px] uppercase font-bold font-mono">DIPERSONALISASI VIA CDP</span>
                 </div>
                 <div className="text-xs">
@@ -606,7 +652,7 @@ export function Mockups({ state, activeTab }: MockupsProps) {
               {/* Mail client Header */}
               <div className="bg-white/[0.04] border-b border-white/10 p-4 flex flex-col gap-2">
                 <div className="flex justify-between items-center text-xs text-slate-500">
-                  <span className="flex items-center gap-2"><Mail size={13} className="text-amber-400" /> EMAIL REFERRAL PROGRAM UC-04</span>
+                  <span className="flex items-center gap-2"><Mail size={13} className="text-amber-400" /> EMAIL REFERRAL PROGRAM TAHAP 6</span>
                   <span className="bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded text-[10px] uppercase font-bold font-mono">CHAMPION SEGMENT ON SITE</span>
                 </div>
                 <div className="text-xs">
@@ -663,6 +709,210 @@ export function Mockups({ state, activeTab }: MockupsProps) {
                 </div>
               </div>
 
+            </div>
+          )
+        )}
+
+        {/* UC-05: AWARENESS CAMPAIGN - VISITOR ANONIM */}
+        {activeTab === 'UC-05' && (
+          subType === 'popup' ? (
+            /* POP-UP LEAD MAGNET MOCKUP */
+            <div id="uc05-popup" className="w-[340px] bg-[#0c1424] border border-indigo-500/30 rounded-[32px] p-6 shadow-[0_25px_50px_-12px_rgba(99,102,241,0.25)] relative text-slate-100 flex flex-col gap-4 overflow-hidden">
+              {/* Decorative radial gradient */}
+              <div className="absolute -top-10 -right-10 w-28 h-28 bg-indigo-500/20 rounded-full blur-xl"></div>
+              
+              <div className="flex justify-between items-center z-10">
+                <span className="text-[10px] bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-2 py-0.5 rounded font-bold font-mono">
+                  S1: AWARENESS
+                </span>
+                <span className="text-slate-500 hover:text-white cursor-pointer text-xs">Close ×</span>
+              </div>
+
+              <div className="flex flex-col gap-2 text-center mt-2 z-10">
+                <div className="w-12 h-12 bg-indigo-600/20 border border-indigo-500/40 rounded-full flex items-center justify-center mx-auto text-indigo-300 shadow-md">
+                  <Award size={24} className="text-indigo-400" />
+                </div>
+                <h3 className="text-sm font-extrabold text-white mt-1">Bingung Arah Karir? 🗺️</h3>
+                <p className="text-xs text-slate-300 px-1 leading-relaxed">
+                  Gabung dengan <strong className="text-indigo-300">10.000+ Mentee</strong> yang sudah menemukan jalur karir ideal mereka. Ambil tes minat bakat gratis sekarang!
+                </p>
+              </div>
+
+              {/* Conversion Offer Card */}
+              <div className="bg-white/[0.02] border border-white/10 rounded-2xl p-4 flex flex-col gap-3 z-10">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-300 text-xs font-bold font-mono">
+                    100%
+                  </div>
+                  <div>
+                    <h4 className="text-[11px] font-bold text-white">Interactive Assessment</h4>
+                    <p className="text-[9px] text-slate-400">Rekomendasi Karir & Rencana Belajar Instan</p>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-1.5 mt-1">
+                  <label className="text-[8px] font-bold text-slate-400 uppercase tracking-wider">SUBMIT EMAIL UNTUK HASIL ASSESSMENT:</label>
+                  <input 
+                    type="email" 
+                    placeholder="nama@gmail.com" 
+                    disabled
+                    className="w-full bg-black/40 border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-slate-300 placeholder-slate-500" 
+                  />
+                </div>
+              </div>
+
+              {/* CTA button */}
+              <button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs py-2.5 rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer z-10">
+                MULAI TES GRATIS SEKARANG <ChevronRight size={13} />
+              </button>
+
+              <span className="text-[8px] text-center text-slate-500 block">
+                *Hanya makan waktu 2 menit • Berbasis Data Industri Terbaru
+              </span>
+            </div>
+          ) : (
+            /* GOOGLE RETARGETING AD MOCKUP */
+            <div id="uc05-ad" className="w-full max-w-xl bg-slate-900/60 rounded-2xl border border-white/10 p-5 shadow-2xl backdrop-blur-md flex flex-col gap-4 text-slate-200">
+              <div className="flex justify-between items-center text-xs text-slate-500 pb-2 border-b border-white/5">
+                <span className="flex items-center gap-2"><Eye size={13} className="text-indigo-400" /> GOOGLE ADS RE-MARKETING (DISPLAY SYSTEM)</span>
+                <span className="text-[10px] uppercase font-bold text-indigo-400 font-mono">Visitor Retargeting Tagged</span>
+              </div>
+
+              {/* Simulated browser search result / display ad */}
+              <div className="bg-[#0b0f19] border border-indigo-500/20 p-4 rounded-xl flex flex-col sm:flex-row gap-4 items-center justify-between relative overflow-hidden">
+                <div className="absolute top-0 right-0 bg-yellow-500/10 border-l border-b border-yellow-500/20 px-2 py-0.5 rounded-bl text-[8px] text-yellow-400 font-bold uppercase font-mono">
+                  Ad · Bersponsor
+                </div>
+
+                <div className="flex items-center gap-3.5 flex-1">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center shrink-0 shadow-lg border border-indigo-400/30">
+                    <span className="text-white text-base font-black tracking-wide">UP</span>
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-extrabold text-white leading-snug">Capek Karir Gini-Gini Aja? 📈</h4>
+                    <p className="text-xs text-slate-300 mt-1 line-clamp-2">
+                      Dapatkan 1-on-1 Mentoring dalam <b>{state.fieldOfInterest || 'Tech & Product'}</b> dari Top Mentor Blibli, Ruangguru, & Grab. Konsultasi Gratis!
+                    </p>
+                    <span className="text-[10px] text-indigo-400 font-mono mt-1 block"><u>uppath.id/assessment-karir</u></span>
+                  </div>
+                </div>
+
+                <button className="bg-indigo-500 hover:bg-indigo-600 text-white font-extrabold text-[10px] px-3.5 py-2 rounded-lg shrink-0 whitespace-nowrap shadow-md shadow-indigo-500/10 cursor-pointer">
+                  Mulai Tes Bebas
+                </button>
+              </div>
+
+              <div className="text-slate-400 text-[11px] leading-relaxed px-1">
+                📌 <b>Kriteria CDP:</b> Terpicu secara otomatis karena Pixel CDP mendeteksi visitor anonim yang menghabiskan waktu &gt;90 detik di website tapi pergi tanpa melakukan registrasi (Cart Abandonment / Goal Funnel Incomplete).
+              </div>
+            </div>
+          )
+        )}
+
+        {/* UC-06: ACQUISITION CAMPAIGN - LEAD NURTURE */}
+        {activeTab === 'UC-06' && (
+          subType === 'email' ? (
+            /* EMAIL LEAD NURTURE DAY 1 */
+            <div id="uc06-email" className="w-full max-w-2xl bg-[#0b0f19]/75 rounded-xl border border-white/10 overflow-hidden shadow-2xl flex flex-col backdrop-blur-md text-left">
+              
+              {/* Mail client Header */}
+              <div className="bg-white/[0.04] border-b border-white/10 p-4 flex flex-col gap-2">
+                <div className="flex justify-between items-center text-xs text-slate-500">
+                  <span className="flex items-center gap-2"><Mail size={13} className="text-amber-400" /> EMAIL LEAD NURTURE TAHAP 2</span>
+                  <span className="bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded text-[10px] uppercase font-bold font-mono">DAY 1 — INTRODUCTORY SEQUENCE</span>
+                </div>
+                <div className="text-xs">
+                  <p className="text-slate-400"><span className="text-slate-500">From:</span> Alvon - CEO UpPath &lt;<span className="text-amber-400">alvon@uppath.id</span>&gt;</p>
+                  <p className="text-slate-400"><span className="text-slate-500">To:</span> {state.userName.toLowerCase() || 'lead'}@email.com</p>
+                  <p className="text-slate-200 mt-1"><span className="text-slate-500">Subject:</span> 🧬 Hasil mini-assessment karirmu sudah siap, rintis jalur {state.fieldOfInterest || 'Tech'} terbaik!</p>
+                </div>
+              </div>
+
+              {/* Email Content body */}
+              <div className="bg-white p-6 md:p-8 text-slate-800 max-h-[500px] overflow-y-auto rounded-b-xl">
+                <div className="bg-gradient-to-r from-amber-500 to-amber-600 p-5 rounded-lg text-white text-center mb-6">
+                  <h3 className="text-base font-extrabold">Your Path to Premium {state.fieldOfInterest || 'Tech/Design'} Career</h3>
+                  <p className="text-xs text-white/90 mt-1">Langkah Terstruktur Menghubungkan Minatmu dengan Realitas Pasar Kerja</p>
+                </div>
+
+                <div className="space-y-4 text-xs md:text-sm leading-relaxed text-slate-600">
+                  <p className="text-slate-800 font-bold">Halo Calon Mentee Masa Depan! 👋</p>
+                  <p>Terima kasih telah meluangkan waktu mengisi penilaian cepat di platform kami. Kamu menunjukkan minat yang luar biasa kuat di bidang <strong className="text-indigo-600 font-bold">{state.fieldOfInterest || 'Product Management'}</strong>.</p>
+                  
+                  <p>Berdasarkan tren industri yang tercatat di database CDP UpPath, posisi ini diperkirakan tumbuh sebesar <strong>24% YoY</strong> selama 3 tahun ke depan, menjadikannya salah satu jalur karir dengan gaji tertinggi dan rekrutmen paling aktif.</p>
+
+                  <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-4 my-3 text-slate-700">
+                    <p className="font-extrabold text-indigo-900 uppercase text-xs mb-1">💡 INSIGHT UTK PILIHAN DI {state.fieldOfInterest.toUpperCase()}:</p>
+                    <p className="text-xs">
+                      Persyaratan nomor satu dari perusahaan rekruter modern saat ini adalah <b>kepemimpinan proyek nyata (portfolio)</b> dan kecocokan interpersonal yang divalidasi langsung oleh praktisi aktif. Kelas online saja tidak lagi cukup di tahun 2026!
+                    </p>
+                  </div>
+
+                  <p>Di UpPath, kami memiliki 50+ Top Mentor berlisensi yang siap membimbingmu 1-on-1 membuat portfolio berkelas dunia.</p>
+
+                  <p className="text-center">
+                    <span className="inline-block bg-[#7b2cbf] text-white font-black text-xs px-6 py-3 rounded-lg hover:bg-purple-700 transition-all cursor-pointer">
+                      BUAT AKUN GRATIS & KLAIM MENTORING SEKARANG →
+                    </span>
+                  </p>
+                </div>
+
+                <div className="border-t border-slate-200 mt-8 pt-4 text-[10px] text-slate-400 text-center">
+                  <p>© 2025 UpPath Company · ITS Surabaya</p>
+                  <p className="mt-1">Email ini dikirim secara otomatis oleh CDP Segment 1 (Pre-Registration Lead Sequence) karena Anda mendaftarkan email untuk mengunduh laporan assessment.</p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            /* WHATSAPP LEAD NURTURE DAY 3 */
+            <div id="uc06-whatsapp" className="w-[330px] bg-[#075e54] border border-emerald-500/30 rounded-[32px] p-4 shadow-[0_25px_50px_-12px_rgba(16,185,129,0.25)] relative text-slate-100 flex flex-col overflow-hidden text-left">
+              {/* WhatsApp top status bar */}
+              <div className="bg-[#075e54] flex justify-between items-center px-2 py-1 pb-3 text-[10px] text-white/80 border-b border-white/5 font-semibold">
+                <span>10:42 AM</span>
+                <span className="flex items-center gap-1">WA Business · UpPath ID</span>
+              </div>
+
+              {/* Chat Container Area */}
+              <div className="bg-[#e5ddd5] px-2 py-4 h-[420px] overflow-y-auto flex flex-col gap-3 relative">
+                {/* Message bubble from system */}
+                <div className="bg-white text-slate-800 rounded-lg p-3 text-xs max-w-[85%] shadow-md self-start relative">
+                  <div className="absolute top-1 -left-1.5 w-0 h-0 border-t-[8px] border-t-white border-l-[8px] border-l-transparent"></div>
+                  
+                  <p className="font-extrabold text-[#075e54] text-[10px] mb-1">UpPath Professional Academy</p>
+                  <p className="leading-relaxed text-slate-700">
+                    Halo Kak! Kami perhatikan Kakak sangat tertarik dengan bidang <strong>{state.fieldOfInterest || 'SaaS'}</strong> di asesmen kemarin. 🚀
+                  </p>
+                  <p className="mt-1.5 leading-relaxed text-slate-700">
+                    Kami mau menawarkan kupon diskon registrasi spesial <strong>{state.discountPercentage}%</strong> untuk mendaftar akun perdana Kakak hari ini!
+                  </p>
+                  <p className="mt-1.5 leading-relaxed text-slate-700">
+                    Mentor favorit dari bidang Kakak siap diakses <b>malam ini</b> untuk sesi pencocokan gratis 15 menit. Kupon Anda: <strong className="font-mono bg-yellow-100 text-yellow-900 border border-yellow-200 px-1 rounded">START{state.discountPercentage}</strong>
+                  </p>
+                  
+                  {/* Embedded link card */}
+                  <div className="mt-3 bg-slate-50 border border-slate-200 rounded-lg overflow-hidden flex flex-col">
+                    <div className="p-2 border-b border-slate-100">
+                      <p className="font-bold text-[10px] text-slate-900 line-clamp-1">Ambil Kupon Diskon {state.discountPercentage}% & Cari Mentor</p>
+                      <p className="text-[9px] text-slate-500 line-clamp-1">uppath.id/claims-kupon-mentorship</p>
+                    </div>
+                  </div>
+
+                  <span className="text-[8px] text-slate-400 block text-right mt-1.5">10:41 AM ✓✓</span>
+                </div>
+              </div>
+
+              {/* Input container simulating keyboard */}
+              <div className="p-1 px-2 border-t border-emerald-800 bg-[#f0f0f0] flex items-center justify-between gap-1">
+                <input 
+                  type="text" 
+                  disabled
+                  placeholder="Ketik balasan..." 
+                  className="bg-white border rounded-full px-3 py-1.5 text-[10px] flex-1 text-slate-700" 
+                />
+                <div className="w-8 h-8 rounded-full bg-[#128c7e] text-white flex items-center justify-center font-bold text-xs shrink-0 cursor-pointer">
+                  ➤
+                </div>
+              </div>
             </div>
           )
         )}

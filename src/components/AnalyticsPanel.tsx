@@ -79,6 +79,40 @@ export function AnalyticsPanel({ activeTab, state }: AnalyticsPanelProps) {
             { stage: 'Friend Upgraded (Paid)', count: 88, percentage: '27.5%' }
           ]
         };
+      case 'UC-05':
+        return {
+          title: 'Segment S1 - Awareness/Retargeting Performance',
+          items: [
+            { label: 'CPM (Biaya/1000)', value: 'Rp 18.500', target: '≤Rp 20.000', icon: Clock, color: 'text-indigo-400 bg-indigo-500/10' },
+            { label: 'CTR Retargeting Ad', value: '3.2%', target: '≥2.5%', icon: Percent, color: 'text-purple-400 bg-purple-500/10' },
+            { label: 'Leads Generated', value: '1,120 Users', target: 'N/A', icon: Users, color: 'text-indigo-400 bg-indigo-500/10' },
+            { label: 'Cost per Lead (CPL)', value: 'Rp 4.300', target: '≤Rp 5.500', icon: TrendingUp, color: 'text-emerald-400 bg-[#7b2cbf]/10' }
+          ],
+          funnel: [
+            { stage: 'Web Visitor Anonim', count: 9800, percentage: '100%' },
+            { stage: 'Display Ad Impressed', count: 7200, percentage: '73.4%' },
+            { stage: 'Clicked Ad / See Pop-Up', count: 2340, percentage: '23.8%' },
+            { stage: 'Engaged with Lead Magnet', count: 1820, percentage: '18.5%' },
+            { stage: 'Submitted Email (Lead)', count: 1120, percentage: '11.4%' }
+          ]
+        };
+      case 'UC-06':
+        return {
+          title: 'Segment S1 - Pre-Registration Lead Nurturing',
+          items: [
+            { label: 'Email Open Rate', value: '62.4%', target: '≥55.0%', icon: Percent, color: 'text-amber-400 bg-amber-500/10' },
+            { label: 'WA Delivery Rate', value: '98.7%', target: '≥95.0%', icon: Sparkles, color: 'text-emerald-400 bg-emerald-500/10' },
+            { label: 'Registrations Created', value: '482 Accounts', target: 'N/A', icon: Users, color: 'text-indigo-400 bg-[#7b2cbf]/10' },
+            { label: 'CAC (Lead Conv.)', value: 'Rp 12.500', target: '≤Rp 15.000', icon: TrendingUp, color: 'text-cherry-400 bg-rose-500/10' }
+          ],
+          funnel: [
+            { stage: 'Acquired Leads (Day 0)', count: 2150, percentage: '100%' },
+            { stage: 'Email Read / Opened', count: 1341, percentage: '62.3%' },
+            { stage: 'WA Delivered (Day 3)', count: 1220, percentage: '56.7%' },
+            { stage: 'Click Registration Link', count: 612, percentage: '28.4%' },
+            { stage: 'Platform Signup Complete', count: 482, percentage: '22.4%' }
+          ]
+        };
     }
   };
 
@@ -98,7 +132,7 @@ export function AnalyticsPanel({ activeTab, state }: AnalyticsPanelProps) {
       </div>
 
       {/* Main KPI cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-4 gap-4">
         {data.items.map((m, index) => {
           const Icon = m.icon;
           return (
@@ -149,6 +183,7 @@ export function AnalyticsPanel({ activeTab, state }: AnalyticsPanelProps) {
                       activeTab === 'UC-01' ? 'bg-purple-500' :
                       activeTab === 'UC-02' ? 'bg-rose-500' :
                       activeTab === 'UC-03' ? 'bg-emerald-500' :
+                      activeTab === 'UC-05' ? 'bg-indigo-500' :
                       'bg-amber-500'
                     }`} 
                     style={{ width: `${widthPct}%` }}

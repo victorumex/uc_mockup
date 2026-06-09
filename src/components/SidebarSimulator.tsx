@@ -10,30 +10,64 @@ interface SidebarSimulatorProps {
 export function SidebarSimulator({ state, onChange }: SidebarSimulatorProps) {
   // Evaluates which campaign gets triggered based on the schema rules in the markdown
   const getAutoTriggerReason = () => {
-    if (state.daysInactive >= 10) {
+    if (state.userSegment === 'anonymous') {
       return {
-        code: 'UC-02',
-        title: 'Re-engagement At-Risk',
-        reason: 'Hari tidak aktif ≥ 10 hari'
+        code: 'UC-05',
+        title: 'Retargeting Anonim',
+        reason: 'Pengunjung tanpa akun (Session ≥ 90s atau page_views ≥ 2)'
       };
-    } else if (state.sessionsDone >= 3 && state.mentorRating >= 4.5) {
+    } else if (state.userSegment === 'lead') {
       return {
-        code: 'UC-04',
-        title: 'Referral Activation',
-        reason: 'Sesi mentoring ≥ 3 & rating ≥ 4.5'
+        code: 'UC-06',
+        title: 'Lead Nurture',
+        reason: 'Email disubmit via Pop-up, belum mendaftar akun'
       };
-    } else if (state.modulesCompleted >= 2) {
-      return {
-        code: 'UC-01',
-        title: 'Konversi Free → Pro',
-        reason: 'Modul selesai ≥ 2 & aktif'
-      };
-    } else {
-      return {
-        code: 'UC-03',
-        title: 'Onboarding Drip Sequence',
-        reason: 'Pengguna baru / kriteria lain tidak terpenuhi'
-      };
+    } else if (state.userSegment === 'free_explorer') {
+      if (state.modulesCompleted >= 2) {
+        return {
+          code: 'UC-01',
+          title: 'Konversi Free → Pro',
+          reason: 'Modul selesai ≥ 2 (Free Explorer)'
+        };
+      } else {
+        return {
+          code: 'UC-03',
+          title: 'Onboarding Drip Sequence',
+          reason: 'Pengguna baru terdaftar (Onboarding 7-Hari)'
+        };
+      }
+    } else { // premium
+      if (state.daysInactive >= 10) {
+        return {
+          code: 'UC-02',
+          title: 'Re-engage At-Risk',
+          reason: 'Ketidakaktifan ≥ 10 hari pada akun Premium'
+        };
+      } else if (state.sessionsDone >= 3 && state.mentorRating >= 4.5) {
+        return {
+          code: 'UC-04',
+          title: 'Referral Activation',
+          reason: 'Sesi mentoring ≥ 3 & rata-rata rating ★ ≥ 4.5'
+        };
+      } else {
+        return {
+          code: 'UC-04',
+          title: 'Referral Activation',
+          reason: 'Campaign loyalitas Premium / Kriteria terpenuhi'
+        };
+      }
+    }
+  };
+
+  const getTahapLabel = (code: string) => {
+    switch (code) {
+      case 'UC-05': return 'Tahap 1';
+      case 'UC-06': return 'Tahap 2';
+      case 'UC-03': return 'Tahap 3';
+      case 'UC-01': return 'Tahap 4';
+      case 'UC-02': return 'Tahap 5';
+      case 'UC-04': return 'Tahap 6';
+      default: return code;
     }
   };
 
@@ -61,6 +95,33 @@ export function SidebarSimulator({ state, onChange }: SidebarSimulatorProps) {
 
       {/* Profile Parameters */}
       <div className="flex flex-col gap-4">
+        <div>
+          <label className="block text-xs font-bold text-slate-300 uppercase tracking-wide mb-2 flex items-center gap-1.5">
+            <Activity size={13} className="text-[#7b2cbf]" /> Segmentasi Profil CDP
+          </label>
+          <div className="grid grid-cols-2 gap-1.5 bg-white/[0.02] p-1.5 rounded-xl border border-white/10">
+            {[
+              { id: 'anonymous', label: 'Visitor Anonim (S1)' },
+              { id: 'lead', label: 'Lead Nurture (S1)' },
+              { id: 'free_explorer', label: 'Free Explorer (S2)' },
+              { id: 'premium', label: 'Paid Premium (S4)' }
+            ].map(seg => (
+              <button
+                key={seg.id}
+                type="button"
+                onClick={() => onChange({ userSegment: seg.id as any })}
+                className={`px-2 py-2 rounded-lg text-[10px] font-bold transition-all text-center border cursor-pointer ${
+                  state.userSegment === seg.id 
+                  ? 'bg-[#7b2cbf] text-white border-white/10 shadow-md' 
+                  : 'bg-transparent text-slate-400 border-transparent hover:text-slate-200 hover:bg-white/5'
+                }`}
+              >
+                {seg.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div>
           <label className="block text-xs font-bold text-slate-300 uppercase tracking-wide mb-2 flex items-center gap-1.5">
             <User size={13} className="text-[#7b2cbf]" /> Nama Pengguna (Mentee)
@@ -117,7 +178,7 @@ export function SidebarSimulator({ state, onChange }: SidebarSimulatorProps) {
             onChange={(e) => onChange({ modulesCompleted: parseInt(e.target.value) })}
             className="w-full h-1.5 bg-white/5 rounded-lg appearance-none cursor-pointer accent-emerald-500"
           />
-          <p className="text-[10px] text-slate-500 mt-1">Selesai ≥ 2 memicu kriteria penawaran Premium (UC-01)</p>
+          <p className="text-[10px] text-slate-500 mt-1">Selesai ≥ 2 memicu kriteria penawaran Premium (Tahap 4)</p>
         </div>
 
         <div>
@@ -156,7 +217,7 @@ export function SidebarSimulator({ state, onChange }: SidebarSimulatorProps) {
               />
             </div>
           </div>
-          <p className="text-[10px] text-slate-500 mt-1">Min. 3 Sesi & ★4.5 memicu Referral Reward (UC-04)</p>
+          <p className="text-[10px] text-slate-500 mt-1">Min. 3 Sesi & ★4.5 memicu Referral Reward (Tahap 6)</p>
         </div>
 
         <div>
@@ -177,7 +238,7 @@ export function SidebarSimulator({ state, onChange }: SidebarSimulatorProps) {
             onChange={(e) => onChange({ daysInactive: parseInt(e.target.value) })}
             className="w-full h-1.5 bg-white/5 rounded-lg appearance-none cursor-pointer accent-rose-500"
           />
-          <p className="text-[10px] text-slate-500 mt-1">Inaktif ≥ 10 hari memicu Churn Prevention WA (UC-02)</p>
+          <p className="text-[10px] text-slate-500 mt-1">Inaktif ≥ 10 hari memicu Churn Prevention WA (Tahap 5)</p>
         </div>
 
         <div>
@@ -215,9 +276,11 @@ export function SidebarSimulator({ state, onChange }: SidebarSimulatorProps) {
                 triggered.code === 'UC-01' ? 'bg-[#7b2cbf]/25 text-[#f8f7ff] border border-[#7b2cbf]/30' :
                 triggered.code === 'UC-02' ? 'bg-rose-500/15 text-rose-300 border border-rose-500/20' :
                 triggered.code === 'UC-04' ? 'bg-amber-500/15 text-amber-300 border border-amber-500/20' :
+                triggered.code === 'UC-05' ? 'bg-indigo-500/15 text-indigo-300 border border-indigo-500/20' :
+                triggered.code === 'UC-06' ? 'bg-amber-500/15 text-amber-300 border border-amber-500/20' :
                 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/20'
               }`}>
-                {triggered.code} — AKTIF
+                {getTahapLabel(triggered.code)} — AKTIF
               </span>
               <h3 className="text-sm font-bold text-white mt-1.5">{triggered.title}</h3>
             </div>
